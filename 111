@@ -1,0 +1,23 @@
+Table products {
+  id          bigint [pk]
+  sku         varchar(64) [unique]
+  name        varchar(255)
+  created_at  timestamp
+  updated_at  timestamp
+}
+
+Table product_audits {
+  id              bigint [pk]
+  product_id      bigint [not null, ref: > products.id] // 审计必须归属某商品 = 必选参与
+  op_type         varchar(16)       // insert|update|delete
+  changed_at      timestamp
+  changed_by      varchar(64)
+  before_snapshot json              // or jsonb
+  after_snapshot  json
+  changed_fields  varchar(64)[]     // 可选：变更字段列表
+  indexes {
+    (product_id, changed_at)
+    (changed_by, changed_at)
+    (op_type, changed_at)
+  }
+}
